@@ -1,10 +1,20 @@
-import styles from "./page.module.css";
+import Link from "next/link";
+import { Suspense } from "react";
+import { EventList } from "@/components/EventList";
+import styles from "./pages.module.css";
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <h1 className={styles.title}>イベント</h1>
-      <p className={styles.lead}>イベントの一覧はここに表示されます（準備中）。</p>
-    </main>
+    <>
+      <div className={styles.header}>
+        <h1 className={styles.title}>イベント</h1>
+        <Link href="/events/new" className="button button-primary">
+          ＋ 新規作成
+        </Link>
+      </div>
+      <Suspense fallback={<p className={styles.loading}>読み込み中…</p>}>
+        <EventList />
+      </Suspense>
+    </>
   );
 }

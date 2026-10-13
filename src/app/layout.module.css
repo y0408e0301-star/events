@@ -1,0 +1,28 @@
+.header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.inner,
+.main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+}
+
+.brand {
+  color: var(--color-text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.main {
+  padding-top: 24px;
+  padding-bottom: 48px;
+}

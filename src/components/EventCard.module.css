@@ -1,0 +1,58 @@
+.card {
+  display: grid;
+  grid-template-columns: 9rem 1fr auto;
+  gap: 4px 16px;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.time {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.body {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.title a {
+  color: var(--color-text);
+}
+
+.location {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.side {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* スマートフォンの幅では、日時・タイトル・ステータスを縦に並べる（要件定義書 N-02） */
+@media (width < 600px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+
+  .time {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .side {
+    justify-content: space-between;
+  }
+}

@@ -4,6 +4,12 @@ import { z } from "zod";
 export const EVENT_STATUSES = ["SCHEDULED", "IN_PROGRESS", "DONE"] as const;
 export type EventStatus = (typeof EVENT_STATUSES)[number];
 
+export const STATUS_LABELS: Record<EventStatus, string> = {
+  SCHEDULED: "予定",
+  IN_PROGRESS: "進行中",
+  DONE: "完了",
+};
+
 export const statusSchema = z.enum(EVENT_STATUSES, { error: "ステータスを選んでください" });
 
 /** 任意の文字列：前後の空白を除き、空なら null として保存する */
@@ -43,6 +49,8 @@ export const eventInputSchema = z
   });
 
 export type EventInput = z.infer<typeof eventInputSchema>;
+/** 画面から API へ送る形（日時は ISO 8601 の文字列） */
+export type EventPayload = z.input<typeof eventInputSchema>;
 
 export const statusInputSchema = z.object({ status: statusSchema });
 
