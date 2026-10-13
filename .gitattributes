@@ -1,0 +1,2 @@
+# git フックは sh で動くため、Windows でも改行を LF に固定する
+.githooks/* text eol=lf
