@@ -9,3 +9,26 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+enum EventStatus {
+  SCHEDULED
+  IN_PROGRESS
+  DONE
+}
+
+model Event {
+  id          Int         @id @default(autoincrement())
+  title       String      @db.VarChar(100)
+  description String?     @db.Text
+  location    String?     @db.VarChar(100)
+  startAt     DateTime    @map("start_at") @db.DateTime(3)
+  endAt       DateTime    @map("end_at") @db.DateTime(3)
+  allDay      Boolean     @default(false) @map("all_day")
+  status      EventStatus @default(SCHEDULED)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@index([startAt])
+  @@index([status, startAt])
+  @@map("events")
+}

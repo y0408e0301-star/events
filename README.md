@@ -17,6 +17,8 @@
 git config core.hooksPath .githooks
 cp .env.example .env
 npm ci
+docker compose up -d
+npx prisma migrate deploy   # テーブルを作る
 ```
 
 毎回の起動：
@@ -28,6 +30,8 @@ npm run dev            # 画面と API（http://localhost:3000）
 
 http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB までつながっています。
 
+`git pull` で `prisma/migrations` に新しいマイグレーションが入ったら、`npx prisma migrate deploy` で DB に反映します。
+
 ## よく使うコマンド
 
 | コマンド | 内容 |
@@ -36,9 +40,9 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 | `npm run build` | 本番用にビルド |
 | `npm run lint` | ESLint（警告もエラー扱い） |
 | `npm run typecheck` | TypeScript の型チェック |
-| `npm test` | ユニットテスト（Vitest） |
+| `npm test` | ユニットテストと API テスト（Vitest。下の「テスト」） |
 | `npm run format` / `npm run format:check` | Prettier で整形／整形済みか確認 |
-| `npm run db:migrate` | `prisma/schema.prisma` の変更からマイグレーションを作って DB に反映 |
+| `npm run db:migrate` | `prisma/schema.prisma` の変更からマイグレーションを作って DB に反映し、Prisma Client を作り直す |
 
 `npm ci` のあとに `prisma generate` が自動で実行され、`src/generated/prisma` に Prisma Client が作られます（git には入れません）。
 
@@ -47,8 +51,29 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 | フォルダ・ファイル | 役割 |
 | --- | --- |
 | src/app/ | 画面と API（`api/` の下の Route Handler） |
-| src/lib/ | DB への接続など、画面と API で使う処理 |
+| src/lib/ | DB 処理（events.ts）・入力チェック（schema.ts）・日時の計算（date.ts）・エラー応答（http.ts） |
 | prisma/ | テーブル定義とマイグレーション |
 | tests/unit/ | ユニットテスト |
+| tests/api/ | API テスト（Route Handler をテスト用の DB で動かす） |
 | compose.yaml, docker/ | 開発用の MySQL |
 | docs/ | 要件定義書 |
+
+## API
+
+画面と同じサーバー（http://localhost:3000）で動きます。日時は時差付きの ISO 8601（例：`2026-10-20T13:00:00+09:00`）で送り、UTC（末尾 `Z`）で返ります。詳しくは要件定義書「6. API」。
+
+| メソッド | パス | 内容 | 成功時 |
+| --- | --- | --- | --- |
+| GET | /api/events | 一覧。`status`（カンマ区切り）・`from`/`to`（YYYY-MM-DD、日本時間）・`q`（タイトルの一部）・`sort`（`startAt`・`-startAt`・`-updatedAt`） | 200 |
+| POST | /api/events | 作成 | 201 |
+| GET | /api/events/{id} | 1 件 | 200 |
+| PUT | /api/events/{id} | 更新（全項目） | 200 |
+| PATCH | /api/events/{id}/status | ステータスだけ変更 | 200 |
+| DELETE | /api/events/{id} | 削除 | 204 |
+| GET | /api/health | サーバーと DB の確認 | 200 |
+
+入力の誤りは 400、存在しない id は 404 で、`{ "message": "...", "errors": { "項目": ["メッセージ"] } }` を返します。
+
+## テスト
+
+`npm test` でユニットテストと API テストを両方実行します（`npm run test:unit` / `npm run test:api` で片方だけ）。API テストは開発用の MySQL の中に `events_test` という別の DB を作って使い、テストのたびに中身を消します。先に `docker compose up -d` で MySQL を起動しておいてください。
