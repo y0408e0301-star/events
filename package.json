@@ -12,15 +12,18 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:migrate": "prisma migrate dev",
-    "postinstall": "prisma generate"
+    "db:migrate": "prisma migrate dev && prisma generate",
+    "postinstall": "prisma generate",
+    "test:unit": "vitest run --project unit",
+    "test:api": "vitest run --project api"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "next": "16.4.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.2",
