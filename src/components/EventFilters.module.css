@@ -1,0 +1,121 @@
+.details {
+  margin-bottom: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.summary {
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-end;
+  padding: 4px 16px 16px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 4px;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.statuses,
+.period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.statuses legend,
+.period legend {
+  width: 100%;
+  float: left;
+}
+
+.chip {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip:has(input:checked) {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.period input {
+  width: 10.5rem;
+}
+
+.field {
+  flex: 1 1 10rem;
+  min-width: 10rem;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.error {
+  width: 100%;
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+/* パソコンの幅では常に開いておき、たたむための見出しは出さない */
+@media (width >= 720px) {
+  .details::details-content {
+    content-visibility: visible;
+    display: block;
+  }
+
+  .summary {
+    display: none;
+  }
+
+  .form {
+    padding-top: 16px;
+  }
+}
+
+@media (width < 720px) {
+  .field {
+    flex-basis: 100%;
+  }
+
+  /* 期間は「開始 〜 終了」を 1 行に収める */
+  .period {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .period legend {
+    grid-column: 1 / -1;
+  }
+
+  .period input {
+    width: 100%;
+    min-width: 0;
+  }
+}

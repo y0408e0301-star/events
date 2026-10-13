@@ -58,3 +58,15 @@
     justify-content: space-between;
   }
 }
+
+.date {
+  display: block;
+  font-weight: 600;
+}
+
+.status {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
