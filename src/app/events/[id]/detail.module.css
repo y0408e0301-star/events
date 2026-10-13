@@ -1,0 +1,39 @@
+.list {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 12px 16px;
+  margin: 0;
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.list dt {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  white-space: pre-wrap;
+}
+
+.none {
+  color: var(--color-text-muted);
+}
+
+@media (width < 600px) {
+  .list {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .list dd + dt {
+    margin-top: 12px;
+  }
+}

@@ -50,13 +50,25 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 
 | フォルダ・ファイル | 役割 |
 | --- | --- |
-| src/app/ | 画面と API（`api/` の下の Route Handler） |
+| src/app/ | 画面（ページ）と API（`api/` の下の Route Handler） |
+| src/components/ | 画面の部品（フォーム・イベントのカード・確認ダイアログ・メッセージなど） |
 | src/lib/ | DB 処理（events.ts）・入力チェック（schema.ts）・日時の計算（date.ts）・エラー応答（http.ts） |
 | prisma/ | テーブル定義とマイグレーション |
 | tests/unit/ | ユニットテスト |
 | tests/api/ | API テスト（Route Handler をテスト用の DB で動かす） |
 | compose.yaml, docker/ | 開発用の MySQL |
 | docs/ | 要件定義書 |
+
+## 画面
+
+| URL | 画面 | できること |
+| --- | --- | --- |
+| / | 一覧 | 開始日ごとにイベントを並べる。詳細へ移る・削除する |
+| /events/new | 作成 | タイトル・開始・終了（終日なら日付だけ）・場所・メモ・ステータスを入れて作成 |
+| /events/{id} | 詳細 | 全項目と作成・更新日時。編集・削除 |
+| /events/{id}/edit | 編集 | 作成と同じフォームで変更 |
+
+日時はすべて日本時間で入力・表示します。削除と、入力中のキャンセルは確認ダイアログで確かめます。
 
 ## API
 

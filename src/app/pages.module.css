@@ -1,0 +1,40 @@
+/* 各ページで共通の見出し・案内 */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.loading,
+.empty {
+  padding: 32px 16px;
+  border: 1px dashed var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.empty p {
+  margin: 0 0 16px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+}
