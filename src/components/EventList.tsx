@@ -12,6 +12,8 @@ export async function EventList() {
   // DB の読み取りはリクエストのたびに行う（ビルド時の事前描画に含めない）
   await connection();
   const events = await listEvents(listQuerySchema.parse({}));
+  // 注意表示（開始済み・終了済み）は、読み込んだときの時刻で判定する
+  const now = new Date();
 
   if (events.length === 0) {
     return (
@@ -34,7 +36,7 @@ export async function EventList() {
           <ul className={styles.events}>
             {group.items.map((event) => (
               <li key={event.id}>
-                <EventCard event={event} />
+                <EventCard event={event} now={now} />
               </li>
             ))}
           </ul>
