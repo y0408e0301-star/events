@@ -1,0 +1,5 @@
+.next/
+src/generated/
+package-lock.json
+# 文書は Claude Docs 版から書き出して同期するため、書式を変えない
+*.md
