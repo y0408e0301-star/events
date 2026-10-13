@@ -1,0 +1,23 @@
+# 開発用の MySQL。events フォルダで `docker compose up -d` を実行して起動する
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: events
+      MYSQL_USER: events
+      MYSQL_PASSWORD: events
+      MYSQL_ROOT_PASSWORD: events
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      # prisma migrate dev がシャドウ DB を作れるよう、events ユーザーに DB 作成の権限を与える
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uevents", "-pevents"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  db-data:

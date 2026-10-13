@@ -1,0 +1,49 @@
+/* 色はここで定義し、ダークモードは OS の設定に合わせて切り替える（要件定義書 N-08） */
+:root {
+  --color-bg: #f7f7f5;
+  --color-surface: #ffffff;
+  --color-text: #1f1f1d;
+  --color-text-muted: #5f5e5a;
+  --color-border: #d6d4cc;
+  --color-accent: #2563c9;
+  --color-warning: #b7791f;
+  --color-danger: #c53030;
+  --radius: 8px;
+  --font-sans:
+    system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI",
+    sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1a1a19;
+    --color-surface: #242423;
+    --color-text: #ecebe6;
+    --color-text-muted: #a8a69e;
+    --color-border: #3d3c38;
+    --color-accent: #6ea0f5;
+    --color-warning: #e0b050;
+    --color-danger: #f07070;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}

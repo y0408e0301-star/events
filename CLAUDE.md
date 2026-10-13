@@ -1,6 +1,7 @@
 # Claude Code への指示
 
 @CONTRIBUTING.md
+@AGENTS.md
 
 上の開発ルールは **例外なく厳守する**。ユーザーに急ぎと言われても、変更が 1 行でも同じ。
 

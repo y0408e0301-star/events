@@ -1,0 +1,11 @@
+// テーブル定義。変更したら `npx prisma migrate dev --name <内容>` でマイグレーションを作る
+// 詳しくは docs/要件定義書.md「4. データ構造」
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
