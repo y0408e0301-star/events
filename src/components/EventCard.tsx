@@ -1,12 +1,22 @@
 import Link from "next/link";
 import type { Event } from "@/generated/prisma/client";
 import { DeleteEventButton } from "@/components/DeleteEventButton";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusPicker } from "@/components/StatusPicker";
+import { StatusWarningBadge } from "@/components/StatusWarningBadge";
 import { formatTimeRangeJst } from "@/lib/date";
+import { statusWarning } from "@/lib/status";
 import styles from "./EventCard.module.css";
 
-/** 一覧の 1 件。日時・タイトル・場所・ステータスと、削除の入口 */
-export function EventCard({ event }: { event: Event }) {
+type Props = {
+  event: Event;
+  /** 注意表示の判定に使う今の時刻 */
+  now: Date;
+};
+
+/** 一覧の 1 件。日時・タイトル・場所・注意表示・ステータスの切り替えと、削除の入口 */
+export function EventCard({ event, now }: Props) {
+  const warning = statusWarning(event, now);
+
   return (
     <article className={styles.card}>
       <p className={styles.time}>{formatTimeRangeJst(event)}</p>
@@ -17,7 +27,8 @@ export function EventCard({ event }: { event: Event }) {
         {event.location && <p className={styles.location}>{event.location}</p>}
       </div>
       <div className={styles.side}>
-        <StatusBadge status={event.status} />
+        {warning && <StatusWarningBadge warning={warning} />}
+        <StatusPicker eventId={event.id} title={event.title} status={event.status} />
         <DeleteEventButton eventId={event.id} title={event.title} className="button button-small" />
       </div>
     </article>

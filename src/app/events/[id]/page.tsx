@@ -2,7 +2,9 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { DeleteEventButton } from "@/components/DeleteEventButton";
 import { StatusBadge } from "@/components/StatusBadge";
+import { StatusWarningBadge } from "@/components/StatusWarningBadge";
 import { formatDateTimeJst, formatEventPeriodJst } from "@/lib/date";
+import { statusWarning } from "@/lib/status";
 import styles from "../../pages.module.css";
 import detailStyles from "./detail.module.css";
 import { loadEvent } from "./load-event";
@@ -22,6 +24,7 @@ export default function EventDetailPage({ params }: PageProps<"/events/[id]">) {
 
 async function EventDetail({ params }: { params: Promise<{ id: string }> }) {
   const event = await loadEvent(params);
+  const warning = statusWarning(event, new Date());
 
   return (
     <>
@@ -39,8 +42,9 @@ async function EventDetail({ params }: { params: Promise<{ id: string }> }) {
         <dt>日時</dt>
         <dd>{formatEventPeriodJst(event)}</dd>
         <dt>ステータス</dt>
-        <dd>
+        <dd className={detailStyles.status}>
           <StatusBadge status={event.status} />
+          {warning && <StatusWarningBadge warning={warning} />}
         </dd>
         <dt>場所</dt>
         <dd>{event.location ?? <span className={detailStyles.none}>なし</span>}</dd>

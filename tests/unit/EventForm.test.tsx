@@ -136,3 +136,70 @@ describe("EventForm", () => {
     expect(screen.getByRole("alertdialog", { name: "入力内容を破棄しますか？" })).toBeVisible();
   });
 });
+
+describe("EventForm：ステータスの提案", () => {
+  beforeEach(() => {
+    // 今を日本時間 10/20 13:30 に固定する（Date だけを差し替え、タイマーは本物のまま）
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-10-20T13:30:00+09:00"));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("作成時は、日時を変えるとステータスの既定値が提案値になる", async () => {
+    const user = userEvent.setup();
+    renderForm();
+    const status = screen.getByLabelText(/ステータス/);
+
+    // 13:00〜14:00 は今（13:30）を含む → 進行中
+    await user.clear(screen.getByLabelText("終了時刻"));
+    await user.type(screen.getByLabelText("終了時刻"), "14:00");
+    expect(status).toHaveValue("IN_PROGRESS");
+
+    // 開始を 15:00 にすると、まだ始まっていない → 予定
+    await user.clear(screen.getByLabelText("終了時刻"));
+    await user.type(screen.getByLabelText("終了時刻"), "16:00");
+    await user.clear(screen.getByLabelText("開始時刻"));
+    await user.type(screen.getByLabelText("開始時刻"), "15:00");
+    expect(status).toHaveValue("SCHEDULED");
+  });
+
+  it("作成時でも、自分で選んだステータスは日時を変えても変えない", async () => {
+    const user = userEvent.setup();
+    renderForm();
+    const status = screen.getByLabelText(/ステータス/);
+
+    await user.selectOptions(status, "DONE");
+    await user.clear(screen.getByLabelText("開始時刻"));
+    await user.type(screen.getByLabelText("開始時刻"), "13:10");
+
+    expect(status).toHaveValue("DONE");
+  });
+
+  it("編集時は、日時を変えて提案と違えばボタンで提案値にできる", async () => {
+    const user = userEvent.setup();
+    render(
+      <ToastProvider>
+        <EventForm
+          mode="edit"
+          eventId={7}
+          initialValues={{ ...initialValues, title: "ゼミ発表" }}
+        />
+      </ToastProvider>,
+    );
+    const status = screen.getByLabelText(/ステータス/);
+
+    // 日時を変えるまでは提案を出さない
+    expect(screen.queryByRole("button", { name: /^提案：/ })).not.toBeInTheDocument();
+
+    // 終了を 13:20 にすると、もう終わっている → 完了を提案
+    await user.clear(screen.getByLabelText("終了時刻"));
+    await user.type(screen.getByLabelText("終了時刻"), "13:20");
+    await user.click(screen.getByRole("button", { name: "提案：完了にする" }));
+
+    expect(status).toHaveValue("DONE");
+    expect(screen.queryByRole("button", { name: /^提案：/ })).not.toBeInTheDocument();
+  });
+});

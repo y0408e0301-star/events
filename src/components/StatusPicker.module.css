@@ -1,0 +1,29 @@
+/* 見た目は StatusBadge に合わせ、状態ごとに枠と背景の色を変える */
+.select {
+  width: auto;
+  min-height: 32px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.select:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.SCHEDULED {
+  border-color: var(--color-border);
+}
+
+.IN_PROGRESS {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.DONE {
+  border-color: var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}

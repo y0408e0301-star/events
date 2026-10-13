@@ -37,8 +37,10 @@
 
 .side {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+  justify-content: flex-end;
 }
 
 /* スマートフォンの幅では、日時・タイトル・ステータスを縦に並べる（要件定義書 N-02） */

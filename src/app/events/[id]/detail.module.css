@@ -37,3 +37,10 @@
     margin-top: 12px;
   }
 }
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}

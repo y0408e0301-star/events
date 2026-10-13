@@ -15,6 +15,7 @@ import {
   type EventPayload,
   type EventStatus,
 } from "@/lib/schema";
+import { suggestStatus } from "@/lib/status";
 import styles from "./EventForm.module.css";
 
 export type EventFormValues = {
@@ -57,6 +58,19 @@ function validate(payload: EventPayload): FieldErrors {
   return result.success ? {} : (z.flattenError(result.error).fieldErrors as FieldErrors);
 }
 
+type PeriodField = "allDay" | "startDate" | "startTime" | "endDate" | "endTime";
+
+/** 入力中の開始・終了を日時にする。まだ日時として読めなければ null */
+function periodOf(values: EventFormValues) {
+  const result = eventInputSchema.safeParse(toPayload({ ...values, title: "-" }));
+  if (!result.success) return null;
+  // 終日は、保存時と同じく終了日の 23:59:59.999（日本時間）までとして考える
+  const endAt = values.allDay
+    ? new Date(`${values.endDate}T23:59:59.999+09:00`)
+    : result.data.endAt;
+  return { startAt: result.data.startAt, endAt };
+}
+
 function FieldError({ id, messages }: { id: string; messages?: string[] }) {
   if (!messages?.length) return null;
   return (
@@ -77,6 +91,10 @@ export function EventForm(props: Props) {
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
+  // 作成時は、ステータスを自分で選ぶまで日時からの提案値を入れる
+  const [statusTouched, setStatusTouched] = useState(false);
+  // 編集時に日時を変えたときの提案値（今のステータスと同じなら出さない）
+  const [suggestion, setSuggestion] = useState<EventStatus | null>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   // 保存・破棄したあとは、次に開いたとき新しいフォームにする
   const shouldReset = useRef(false);
@@ -91,6 +109,8 @@ export function EventForm(props: Props) {
       if (shouldReset.current) {
         shouldReset.current = false;
         setValues(initialValues);
+        setStatusTouched(false);
+        setSuggestion(null);
         setErrors({});
         setFormError(null);
         setSaving(false);
@@ -103,6 +123,20 @@ export function EventForm(props: Props) {
 
   function set<K extends keyof EventFormValues>(key: K, value: EventFormValues[K]) {
     setValues((current) => ({ ...current, [key]: value }));
+  }
+
+  /** 開始・終了・終日を変えたら、ステータスの提案を計算し直す（要件定義書「ステータスの自動の提案」） */
+  function setPeriod<K extends PeriodField>(key: K, value: EventFormValues[K]) {
+    const next = { ...values, [key]: value };
+    const period = periodOf(next);
+    const suggested = period ? suggestStatus(period, new Date()) : null;
+    if (mode === "create" && !statusTouched && suggested) {
+      next.status = suggested;
+    }
+    if (mode === "edit") {
+      setSuggestion(suggested);
+    }
+    setValues(next);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -177,7 +211,7 @@ export function EventForm(props: Props) {
           <input
             type="checkbox"
             checked={values.allDay}
-            onChange={(e) => set("allDay", e.target.checked)}
+            onChange={(e) => setPeriod("allDay", e.target.checked)}
           />
           終日（時刻を指定しない）
         </label>
@@ -192,7 +226,7 @@ export function EventForm(props: Props) {
             type="date"
             aria-label="開始日"
             value={values.startDate}
-            onChange={(e) => set("startDate", e.target.value)}
+            onChange={(e) => setPeriod("startDate", e.target.value)}
             required
             aria-invalid={!!errors.startAt}
             aria-describedby={describedBy("startAt")}
@@ -202,7 +236,7 @@ export function EventForm(props: Props) {
               type="time"
               aria-label="開始時刻"
               value={values.startTime}
-              onChange={(e) => set("startTime", e.target.value)}
+              onChange={(e) => setPeriod("startTime", e.target.value)}
               aria-invalid={!!errors.startAt}
               aria-describedby={describedBy("startAt")}
             />
@@ -220,7 +254,7 @@ export function EventForm(props: Props) {
             type="date"
             aria-label="終了日"
             value={values.endDate}
-            onChange={(e) => set("endDate", e.target.value)}
+            onChange={(e) => setPeriod("endDate", e.target.value)}
             required
             aria-invalid={!!errors.endAt}
             aria-describedby={describedBy("endAt")}
@@ -230,7 +264,7 @@ export function EventForm(props: Props) {
               type="time"
               aria-label="終了時刻"
               value={values.endTime}
-              onChange={(e) => set("endTime", e.target.value)}
+              onChange={(e) => setPeriod("endTime", e.target.value)}
               aria-invalid={!!errors.endAt}
               aria-describedby={describedBy("endAt")}
             />
@@ -274,7 +308,10 @@ export function EventForm(props: Props) {
         <select
           id={fieldId("status")}
           value={values.status}
-          onChange={(e) => set("status", e.target.value as EventStatus)}
+          onChange={(e) => {
+            setStatusTouched(true);
+            set("status", e.target.value as EventStatus);
+          }}
           aria-invalid={!!errors.status}
           aria-describedby={describedBy("status")}
         >
@@ -284,6 +321,18 @@ export function EventForm(props: Props) {
             </option>
           ))}
         </select>
+        {suggestion && suggestion !== values.status && (
+          <p className={styles.suggestion}>
+            日時から見ると「{STATUS_LABELS[suggestion]}」が自然です。
+            <button
+              type="button"
+              className="button button-small"
+              onClick={() => set("status", suggestion)}
+            >
+              提案：{STATUS_LABELS[suggestion]}にする
+            </button>
+          </p>
+        )}
         <FieldError id={errorId("status")} messages={errors.status} />
       </div>
 
