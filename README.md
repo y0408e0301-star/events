@@ -41,6 +41,7 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 | `npm run lint` | ESLint（警告もエラー扱い） |
 | `npm run typecheck` | TypeScript の型チェック |
 | `npm test` | ユニットテストと API テスト（Vitest。下の「テスト」） |
+| `npm run test:e2e` | E2E テスト（Playwright。下の「テスト」） |
 | `npm run format` / `npm run format:check` | Prettier で整形／整形済みか確認 |
 | `npm run db:migrate` | `prisma/schema.prisma` の変更からマイグレーションを作って DB に反映し、Prisma Client を作り直す |
 
@@ -56,6 +57,7 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 | prisma/ | テーブル定義とマイグレーション |
 | tests/unit/ | ユニットテスト |
 | tests/api/ | API テスト（Route Handler をテスト用の DB で動かす） |
+| tests/e2e/ | E2E テスト（Playwright） |
 | compose.yaml, docker/ | 開発用の MySQL |
 | docs/ | 要件定義書 |
 
@@ -89,3 +91,11 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 ## テスト
 
 `npm test` でユニットテストと API テストを両方実行します（`npm run test:unit` / `npm run test:api` で片方だけ）。API テストは開発用の MySQL の中に `events_test` という別の DB を作って使い、テストのたびに中身を消します。先に `docker compose up -d` で MySQL を起動しておいてください。
+
+`npm run test:e2e` は、画面を実際のブラウザで操作して主な流れ（作成 → 編集 → ステータス変更 → 絞り込み → 削除など）を確かめます。`events_e2e` という別の DB にマイグレーションを当て、本番用にビルドしたサーバーを 3000 番で起動して動かします（テストのたびにデータを消すので、開発用のデータは消えません）。
+
+- 3000 番は開発サーバーと同じなので、`npm run dev` を止めてから実行してください
+- 手元では PC の Microsoft Edge を使います（CI では Playwright の Chromium）
+- 失敗したときは `test-results/` のトレースを `npx playwright show-trace <trace.zip>` で見られます
+
+Pull Request と main への push のたびに、GitHub Actions（`.github/workflows/ci.yml`）が書式・lint・型チェック・ユニット＋API テスト・ビルド・E2E テストを実行します。

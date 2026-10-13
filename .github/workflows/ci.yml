@@ -1,0 +1,79 @@
+# コードチェックとテストを、Pull Request と main への push ごとに GitHub 上で実行する（要件定義書 N-10）。
+# 手元で同じことをするコマンドは README「よく使うコマンド」
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  # 手元の .env の代わり。MySQL はサービスコンテナで動かし、テスト用の DB を作れるよう root で接続する
+  DATABASE_URL: mysql://root:events@127.0.0.1:3306/events?allowPublicKeyRetrieval=true
+  TEST_DATABASE_URL: mysql://root:events@127.0.0.1:3306/events_test?allowPublicKeyRetrieval=true
+  E2E_DATABASE_URL: mysql://root:events@127.0.0.1:3306/events_e2e?allowPublicKeyRetrieval=true
+
+jobs:
+  check:
+    name: 書式・lint・型チェック・テスト・ビルド
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: events
+          MYSQL_DATABASE: events
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -pevents"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      # ユニットテストと API テスト（API テストは events_test DB を使う）
+      - run: npm test
+      - run: npm run build
+
+  e2e:
+    name: E2E テスト（Playwright）
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: events
+          MYSQL_DATABASE: events
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -pevents"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # events_e2e DB にマイグレーションを当て、本番ビルドを 3000 番で起動してテストする
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
