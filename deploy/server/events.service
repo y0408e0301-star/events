@@ -1,0 +1,28 @@
+# 画面と API のサーバー（Next.js の standalone 出力）。EC2 の /etc/systemd/system/events.service に置く
+# ログは journalctl -u events で見られる
+[Unit]
+Description=events web server (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=events
+WorkingDirectory=/opt/events/app
+# 起動前に DB の接続情報を Secrets Manager から読む（+ は root で実行する印）
+ExecStartPre=+/opt/events/bin/db-secret.sh write
+# 読んだ接続情報（DATABASE_URL）を環境変数として渡す。ファイルは root だけが読める
+# /run は EC2 の再起動で空になる。systemd は ExecStartPre の前にも読もうとするので、なくてもよい印（-）を付ける
+#（ExecStart の前に、ExecStartPre が作ったファイルを読み直す）
+EnvironmentFile=-/run/events/env
+Environment=NODE_ENV=production
+# nginx からだけ受ける（ポートは Next.js の既定の 3000 のまま）
+Environment=HOSTNAME=127.0.0.1
+# RDS の証明書を確かめるための CA（setup.sh が置く）
+Environment=NODE_EXTRA_CA_CERTS=/opt/events/rds-ca.pem
+# メモリ 1 GB の EC2 に合わせてヒープを抑える
+ExecStart=/usr/bin/node --max-old-space-size=384 server.js
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
