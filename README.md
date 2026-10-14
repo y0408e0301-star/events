@@ -2,7 +2,7 @@
 
 イベント・予定を登録し、日時とステータス（予定／進行中／完了）で管理する Web アプリです。Next.js・Prisma・MySQL で作ります。
 
-要件は [docs/要件定義書.md](docs/要件定義書.md) を、開発ルールは [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
+要件は [docs/要件定義書.md](docs/要件定義書.md) を、開発ルールは [CONTRIBUTING.md](CONTRIBUTING.md) を、AWS への公開は [docs/公開環境.md](docs/公開環境.md) を参照してください。
 
 ## 必要なもの
 
@@ -59,7 +59,8 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 | tests/api/ | API テスト（Route Handler をテスト用の DB で動かす） |
 | tests/e2e/ | E2E テスト（Playwright） |
 | compose.yaml, docker/ | 開発用の MySQL |
-| docs/ | 要件定義書 |
+| deploy/ | 公開環境（Terraform、EC2 の設定、デプロイ・起動・停止のスクリプト） |
+| docs/ | 要件定義書、公開環境の説明 |
 
 ## 画面
 

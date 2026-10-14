@@ -3,3 +3,6 @@ src/generated/
 package-lock.json
 # 文書は Claude Docs 版から書き出して同期するため、書式を変えない
 *.md
+# Terraform の作業フォルダ・状態ファイル（deploy/terraform/.gitignore 済みだが、Prettier はルートの .gitignore しか見ない）
+deploy/terraform/.terraform/
+deploy/terraform/*.tfstate*
