@@ -35,7 +35,12 @@ export type EventFormValues = {
 type FieldErrors = Partial<Record<keyof EventPayload, string[]>>;
 
 type Props =
-  | { mode: "create"; initialValues: EventFormValues }
+  | {
+      mode: "create";
+      initialValues: EventFormValues;
+      /** キャンセルで戻る先（カレンダーから開いたときはカレンダー）。既定は一覧 */
+      backHref?: string;
+    }
   | { mode: "edit"; eventId: number; initialValues: EventFormValues };
 
 /** フォームの値を API に送る形にする。日付が空なら空文字のまま送り、入力チェックで止める */
@@ -118,7 +123,7 @@ export function EventForm(props: Props) {
     };
   }, [initialValues]);
 
-  const backHref = props.mode === "edit" ? `/events/${props.eventId}` : "/";
+  const backHref = props.mode === "edit" ? `/events/${props.eventId}` : (props.backHref ?? "/");
   const dirty = JSON.stringify(values) !== JSON.stringify(initialValues);
 
   function set<K extends keyof EventFormValues>(key: K, value: EventFormValues[K]) {
