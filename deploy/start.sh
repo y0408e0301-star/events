@@ -15,6 +15,12 @@ url=$(terraform -chdir=$tf output -raw url)
 db_status=$(aws rds describe-db-instances --db-instance-identifier "$db_id" \
   --query "DBInstances[0].DBInstanceStatus" --output text)
 echo "== RDS（$db_id）: $db_status"
+# stop.sh の直後などで止まる途中なら、止まりきるのを待つ（その間は起動の指示を受け付けない）
+while [[ "$db_status" == stopping ]]; do
+  sleep 15
+  db_status=$(aws rds describe-db-instances --db-instance-identifier "$db_id" \
+    --query "DBInstances[0].DBInstanceStatus" --output text)
+done
 if [[ "$db_status" == stopped ]]; then
   aws rds start-db-instance --db-instance-identifier "$db_id" >/dev/null
 fi
