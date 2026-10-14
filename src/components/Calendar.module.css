@@ -1,0 +1,392 @@
+/* カレンダー（月表示・週表示）。720px 未満（スマートフォンの幅）では、月は件数、週は日ごとの一覧にする */
+
+/* ---- イベント 1 件（月・週で共通） ---- */
+
+.event {
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+  min-width: 0;
+  padding: 1px 6px;
+  border-left: 3px solid;
+  border-radius: 4px;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.event:hover .eventTitle {
+  text-decoration: underline;
+}
+
+.symbol {
+  flex: none;
+  font-weight: 700;
+}
+
+.eventTime {
+  flex: none;
+  color: var(--color-text-muted);
+}
+
+.eventTitle {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scheduled {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.inProgress {
+  border-color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 16%, var(--color-surface));
+}
+
+.done {
+  border-color: var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+.overdue {
+  border-color: var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+.overdue .symbol {
+  color: var(--color-danger);
+}
+
+.started {
+  border-color: var(--color-warning);
+  background: var(--color-warning-soft);
+}
+
+.started .symbol {
+  color: var(--color-warning);
+}
+
+/* ---- 日付の数字と「＋」 ---- */
+
+.dayNumber {
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* 月表示では数字を丸の中に置く（今日は塗りつぶす） */
+.day .dayNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+}
+
+.dayNumber:hover {
+  text-decoration: underline;
+}
+
+.add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.add:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* ---- 月表示 ---- */
+
+.month {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: var(--color-surface);
+}
+
+.weekday {
+  padding: 6px 0;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.weekday:first-child {
+  color: var(--color-danger);
+}
+
+.weekday:last-child {
+  color: var(--color-accent);
+}
+
+.day {
+  height: 112px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.otherMonth {
+  background: var(--color-bg);
+}
+
+.otherMonth .dayNumber {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.today .dayNumber {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.dayEvents {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.more {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 0 6px;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.count {
+  display: none;
+}
+
+/* ---- 週表示（広い画面） ---- */
+
+.week {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  overflow: hidden;
+  --hour: 48px;
+  --gutter: 48px;
+}
+
+.weekRow,
+.timeGrid {
+  display: grid;
+  grid-template-columns: var(--gutter) repeat(7, minmax(0, 1fr));
+}
+
+.gutter {
+  padding: 4px;
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  text-align: right;
+}
+
+.weekDayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 4px 8px;
+  border-left: 1px solid var(--color-border);
+  font-size: 0.8125rem;
+}
+
+.weekDayHeader.today .dayNumber {
+  padding: 0 8px;
+}
+
+.allDayRow {
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.allDayCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 32px;
+  margin: 0;
+  padding: 4px;
+  border-left: 1px solid var(--color-border);
+  list-style: none;
+}
+
+.timeScroll {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.timeGrid {
+  position: relative;
+  height: calc(var(--hour) * 24);
+}
+
+.hours {
+  position: relative;
+}
+
+.hours span {
+  position: absolute;
+  right: 6px;
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  transform: translateY(-50%);
+}
+
+.hours span:first-child {
+  transform: none;
+}
+
+.dayColumn {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--color-border);
+  /* 1 時間ごとの線 */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--color-border) 0 1px,
+    transparent 1px var(--hour)
+  );
+  list-style: none;
+}
+
+.dayColumn.today {
+  background-color: color-mix(in srgb, var(--color-accent) 6%, transparent);
+}
+
+.timed {
+  position: absolute;
+  padding: 1px 2px;
+}
+
+/* 時間軸の上では 1 行目に記号と時刻、2 行目にタイトル。列が細くても 1 文字ずつ折り返さず、はみ出た分は「…」にする */
+.timed .event {
+  display: block;
+  height: 100%;
+  white-space: nowrap;
+}
+
+.timed .eventTitle {
+  display: block;
+}
+
+/* ---- 週表示（スマートフォンの幅） ---- */
+
+.weekList {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.weekList > li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.weekListHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.weekListDay {
+  margin: 0 0 4px;
+  font-size: 0.9375rem;
+}
+
+.weekListDay a {
+  color: inherit;
+}
+
+.weekList > li.today .weekListDay a {
+  color: var(--color-accent);
+}
+
+.weekListEvents {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.weekListEvents .event {
+  padding: 4px 8px;
+  font-size: 0.875rem;
+}
+
+.none {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 719px) {
+  .day {
+    height: 64px;
+    padding: 2px;
+  }
+
+  .dayHeader {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .add {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+  }
+
+  .dayEvents,
+  .more {
+    display: none;
+  }
+
+  .count {
+    display: block;
+    color: var(--color-accent);
+    font-size: 0.6875rem;
+    text-align: center;
+  }
+
+  .week {
+    display: none;
+  }
+
+  .weekList {
+    display: block;
+  }
+}

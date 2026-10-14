@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+import { MainNav, MainNavLinks } from "@/components/MainNav";
 import { ToastProvider } from "@/components/Toast";
 import "./globals.css";
 import styles from "./layout.module.css";
@@ -19,6 +21,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/" className={styles.brand}>
                 イベント・予定管理
               </Link>
+              <Suspense fallback={<MainNavLinks current={null} />}>
+                <MainNav />
+              </Suspense>
             </div>
           </header>
           <main className={styles.main}>{children}</main>

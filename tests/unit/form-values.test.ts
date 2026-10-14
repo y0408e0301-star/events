@@ -69,4 +69,13 @@ describe("フォームの初期値", () => {
       status: "SCHEDULED",
     });
   });
+
+  it("カレンダーの日付から開いたときは、その日の 9:00〜10:00", () => {
+    expect(defaultFormValues(new Date("2026-10-14T03:00:00Z"), "2026-10-20")).toMatchObject({
+      startDate: "2026-10-20",
+      startTime: "09:00",
+      endDate: "2026-10-20",
+      endTime: "10:00",
+    });
+  });
 });

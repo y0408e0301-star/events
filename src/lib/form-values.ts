@@ -1,6 +1,6 @@
 // イベントの作成・編集フォームの初期値
 import type { EventFormValues } from "@/components/EventForm";
-import { toJstDateKey, toJstTime } from "@/lib/date";
+import { parseDateJst, toJstDateKey, toJstTime } from "@/lib/date";
 import type { EventStatus } from "@/lib/schema";
 
 type EventLike = {
@@ -30,9 +30,14 @@ export function toFormValues(event: EventLike): EventFormValues {
 
 const HOUR_MS = 60 * 60 * 1000;
 
-/** 作成画面の初期値：次の正時から 1 時間 */
-export function defaultFormValues(now: Date): EventFormValues {
-  const start = new Date(Math.ceil(now.getTime() / HOUR_MS) * HOUR_MS);
+/**
+ * 作成画面の初期値：次の正時から 1 時間。
+ * カレンダーの日付から開いたとき（date = "2026-10-20"）は、その日の 9:00〜10:00
+ */
+export function defaultFormValues(now: Date, date?: string): EventFormValues {
+  const start = date
+    ? new Date(parseDateJst(date).getTime() + 9 * HOUR_MS)
+    : new Date(Math.ceil(now.getTime() / HOUR_MS) * HOUR_MS);
   const end = new Date(start.getTime() + HOUR_MS);
   return toFormValues({
     title: "",
