@@ -1,8 +1,35 @@
 # イベント・予定管理アプリ（events）
 
-イベント・予定を登録し、日時とステータス（予定／進行中／完了）で管理する Web アプリです。Next.js・Prisma・MySQL で作ります。
+イベント・予定を登録し、日時とステータス（予定／進行中／完了）で管理する Web アプリです。Next.js・Prisma・MySQL で作り、AWS（CloudFront → EC2 → RDS）に公開しています。
 
-要件は [docs/要件定義書.md](docs/要件定義書.md) を、開発ルールは [CONTRIBUTING.md](CONTRIBUTING.md) を、AWS への公開は [docs/公開環境.md](docs/公開環境.md) を参照してください。
+**公開 URL：https://dpjvt51mn3i90.cloudfront.net**（費用を抑えるため普段は止めています。見せるときに `bash deploy/start.sh` で起動します。[docs/公開環境.md](docs/公開環境.md)）
+
+要件は [docs/要件定義書.md](docs/要件定義書.md) を、開発ルールは [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
+
+![一覧画面（PC）](docs/images/list.png)
+
+## できること
+
+- **イベントの作成・一覧・詳細・編集・削除**：タイトル・開始・終了・場所・メモ・ステータスを持つ。削除や入力中のキャンセルは確認ダイアログで確かめる
+- **日時の管理**：日本時間で入力・表示する。終日にすると日付だけで入力でき、日をまたぐイベントも扱える。終了は開始より前にできない。一覧は日付ごとの見出しで並ぶ
+- **ステータス**：一覧のカード上でその場で切り替えられる。日時から「今ならこのステータス」を提案し（作成フォームの既定値、編集フォームのボタン）、終了を過ぎて完了でないものには「終了済み・未完了」（赤）、開始を過ぎて予定のままのものには「開始済み」（黄）を出す
+- **絞り込み・並べ替え**：ステータス（複数）・期間・キーワードで絞り込み、開始の早い順・遅い順・更新の新しい順に並べる。条件は URL に入るので、再読み込みや URL の共有でも同じ結果になる
+- **保存の失敗に強い**：保存に失敗したら理由を表示し、入力内容は消さない
+- **スマートフォンとダークモード**：幅 360px から横スクロールなしで使え、OS の設定に合わせてライト／ダークを切り替える
+
+| 編集フォームのステータスの提案 | スマートフォン（ダーク） |
+| --- | --- |
+| ![日時を変えると「提案：進行中にする」が出る編集フォーム](docs/images/edit-suggestion.png) | <img src="docs/images/list-mobile-dark.png" alt="スマートフォン幅・ダークモードの一覧画面" width="300"> |
+
+## 使っている技術
+
+| 区分 | 使うもの |
+| --- | --- |
+| 画面＋API | Next.js 16（App Router・Route Handler）・React 19・TypeScript・CSS Modules・Zod |
+| データベース | MySQL 8.4・Prisma 7 |
+| テスト | Vitest・Testing Library（ユニット・API）、Playwright（E2E） |
+| 公開環境 | AWS（CloudFront・EC2・RDS・Secrets Manager・EventBridge Scheduler）・Terraform・nginx |
+| 自動チェック | GitHub Actions（書式・lint・型チェック・テスト・ビルド・E2E・Terraform） |
 
 ## 必要なもの
 
@@ -60,7 +87,7 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 | tests/e2e/ | E2E テスト（Playwright） |
 | compose.yaml, docker/ | 開発用の MySQL |
 | deploy/ | 公開環境（Terraform、EC2 の設定、デプロイ・起動・停止のスクリプト） |
-| docs/ | 要件定義書、公開環境の説明 |
+| docs/ | 要件定義書、公開環境の説明、README のスクリーンショット（images/） |
 
 ## 画面
 
