@@ -30,19 +30,34 @@
 
 .statuses,
 .period {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
   margin: 0;
   padding: 0;
   border: none;
 }
 
-.statuses legend,
-.period legend {
+.statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.statuses legend {
   width: 100%;
   float: left;
+}
+
+/* 期間は、どの幅でも「開始 〜 終了」を 1 行に収める */
+.period {
+  display: grid;
+  flex: 1 1 22rem;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+}
+
+.period legend {
+  grid-column: 1 / -1;
 }
 
 .chip {
@@ -62,7 +77,8 @@
 }
 
 .period input {
-  width: 10.5rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .field {
@@ -103,19 +119,7 @@
     flex-basis: 100%;
   }
 
-  /* 期間は「開始 〜 終了」を 1 行に収める */
   .period {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    width: 100%;
-  }
-
-  .period legend {
-    grid-column: 1 / -1;
-  }
-
-  .period input {
-    width: 100%;
-    min-width: 0;
+    flex-basis: 100%;
   }
 }
