@@ -16,7 +16,8 @@
     "postinstall": "prisma generate",
     "test:unit": "vitest run --project unit",
     "test:api": "vitest run --project api",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test --project=chromium",
+    "screenshots": "playwright test --project=screenshots"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.10.0",
