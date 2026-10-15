@@ -74,6 +74,7 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 | `npm run typecheck` | TypeScript の型チェック |
 | `npm test` | ユニットテストと API テスト（Vitest。下の「テスト」） |
 | `npm run test:e2e` | E2E テスト（Playwright。下の「テスト」） |
+| `npm run screenshots` | README のスクリーンショット（`docs/images/`）を撮り直す（下の「テスト」） |
 | `npm run format` / `npm run format:check` | Prettier で整形／整形済みか確認 |
 | `npm run db:migrate` | `prisma/schema.prisma` の変更からマイグレーションを作って DB に反映し、Prisma Client を作り直す |
 
@@ -90,6 +91,7 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 | tests/unit/ | ユニットテスト |
 | tests/api/ | API テスト（Route Handler をテスト用の DB で動かす） |
 | tests/e2e/ | E2E テスト（Playwright） |
+| tests/screenshots/ | README のスクリーンショットを撮る（Playwright） |
 | compose.yaml, docker/ | 開発用の MySQL |
 | deploy/ | 公開環境（Terraform、EC2 の設定、デプロイ・起動・停止のスクリプト） |
 | docs/ | 要件定義書、公開環境の説明、README のスクリーンショット（images/） |
@@ -131,5 +133,7 @@ http://localhost:3000/api/health が `{"status":"ok"}` を返せば、DB まで�
 - 3000 番は開発サーバーと同じなので、`npm run dev` を止めてから実行してください
 - 手元では PC の Microsoft Edge を使います（CI では Playwright の Chromium）
 - 失敗したときは `test-results/` のトレースを `npx playwright show-trace <trace.zip>` で見られます
+
+`npm run screenshots` は、E2E テストと同じ仕組み（`events_e2e` の DB、3000 番の本番ビルド）で、README のスクリーンショット 5 枚を `docs/images/` に撮り直します。注意表示は今の時刻で決まるので、データは撮る日からの相対の日付で作り、5 枚とも同じデータで撮ります。CI では実行しません。
 
 Pull Request と main への push のたびに、GitHub Actions（`.github/workflows/ci.yml`）が書式・lint・型チェック・ユニット＋API テスト・ビルド・E2E テストを実行します。

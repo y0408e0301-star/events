@@ -25,6 +25,12 @@ export default defineConfig({
       // 手元では PC の Edge を使い、CI では Playwright の Chromium を使う
       use: { ...devices["Desktop Chrome"], channel: process.env.CI ? undefined : "msedge" },
     },
+    {
+      // README のスクリーンショットを撮る（npm run screenshots。テストではないので CI では動かさない）
+      name: "screenshots",
+      testDir: "./tests/screenshots",
+      use: { ...devices["Desktop Chrome"], channel: process.env.CI ? undefined : "msedge" },
+    },
   ],
   webServer: {
     // E2E 用の DB にマイグレーションを当て（DB がなければ作られる）、本番と同じビルドで確かめる。
