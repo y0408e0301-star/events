@@ -24,7 +24,7 @@
 
 | 編集フォームのステータスの提案 | スマートフォン（ダーク） |
 | --- | --- |
-| ![日時を変えると「提案：進行中にする」が出る編集フォーム](docs/images/edit-suggestion.png) | <img src="docs/images/list-mobile-dark.png" alt="スマートフォン幅・ダークモードの一覧画面" width="300"> |
+| ![日時を変えると、日時から見て自然なステータスを「提案：〇〇にする」で示す編集フォーム](docs/images/edit-suggestion.png) | <img src="docs/images/list-mobile-dark.png" alt="スマートフォン幅・ダークモードの一覧画面" width="300"> |
 
 ## 使っている技術
 
